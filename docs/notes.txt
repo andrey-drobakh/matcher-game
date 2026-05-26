@@ -1,0 +1,37 @@
+    Matcher Game Project Notes
+
+
+Description :
+- There are some (say 20) cards;
+- Each card has a number and a value:
+    - number: a player opens the card by its number;
+    - value: a letter like "a", "b", "c" etc.,
+    when the card is open the value is shown;
+- Moves :
+    - a player must open two cards by typing two numbers,
+    like "3 16"
+    - then, these two card's values are shown, like "f a",
+    the player needs to memorize the values;
+    - so, if the values are the same, the player takes the cards
+    and make the next move;
+    - if the values are NOT the same, the next player moves;
+- Goal: the winner is who collects more cards than others;
+- Idea: the game is inspired by Pexeso game;
+
+
+Terms :
+- Card
+- Card Number
+- Card Value
+- Player Input
+
+
+===========
+Development
+===========
+
+- run_game function: takes Backend and Interface objects;
+
+
+
+
