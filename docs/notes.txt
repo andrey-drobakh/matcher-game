@@ -19,6 +19,28 @@ Description :
 - Idea: the game is inspired by Pexeso game;
 
 
+Game Session Example :
+> player names : sam bob
+> number of cards : 20
+>
+> sam : 2 7
+> b f
+>
+> bob : 2 11
+> b e
+>
+> sam : 6 14
+> c b
+>
+> bob : 2 14
+> b b - match
+>
+> bob : 7 12
+> f j
+>
+> sam : ...
+
+
 Terms :
 - Card
 - Card Number

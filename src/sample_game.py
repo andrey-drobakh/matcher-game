@@ -52,9 +52,11 @@ class SampleInterface( AbstractGameInterface ) :
         wait()
         print( self._prompt, 'intro text' )
 
-    def read_and_handle_player_names( self, md : MoveData ) :
+    def read_and_handle_setup_data( self, md : MoveData ) -> bool :
         wait()
         print( self._prompt, 'Here the program reads the player name and handles it' )
+
+        return True
 
     def display_prompt( self, md : MoveData ) :
         wait()
