@@ -1,6 +1,6 @@
 import core
 import src.sample_game as sg
-from src.cli_game.interface import CLIGameInterface
+from src.cli_game.interface import CLIGameInterface, CLIGame_SampleBackend
 from src.cli_game.backend import CLIGameBackend
 
 
@@ -15,7 +15,7 @@ def run_game(
 
     i.print_intro_text( md )
 
-    if i.read_and_handle_player_names( md ) :
+    if not i.read_and_handle_setup_data( md ) :
         return
 
     be.init_game( md )
@@ -32,7 +32,8 @@ def run_game(
 
 
 if __name__ == '__main__' :
-    run_game( sg.SampleBackend(), sg.SampleInterface() )
+    # run_game( sg.SampleBackend(), sg.SampleInterface() )
+    run_game( CLIGame_SampleBackend(), CLIGameInterface() )
 
     # For now, this call uses "empty" objects,
     # and it causes running the infinite loop!!!

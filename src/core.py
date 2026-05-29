@@ -1,4 +1,5 @@
 import abc
+from dataclasses import dataclass
 
 
 class AbstractGameBackend( abc.ABC ) :
@@ -25,7 +26,10 @@ class AbstractGameInterface( abc.ABC ) :
         pass
 
     @abc.abstractmethod
-    def read_and_handle_player_names( self, md : MoveData ) :
+    def read_and_handle_setup_data( self, md : MoveData ) -> bool :
+        """
+        :return: True, if data read is correct.
+        """
         pass
 
     @abc.abstractmethod
@@ -45,5 +49,11 @@ class AbstractGameInterface( abc.ABC ) :
         pass
 
 
+@dataclass
 class MoveData :
-    pass
+    player_names : list[ str ] = None
+    card_count : int = 0
+    # setup_data_error_message : str = ''
+
+    player_index : int = -1
+    player_input : str = ''
