@@ -41,19 +41,57 @@ Game Session Example :
 > sam : ...
 
 
+Player Input types :
+- "abc54,.ert" :
+    - not a two-positive-integer-numbers string [INVALID];
+- "6 6" :
+    - valid,
+    - but contains two equal numbers;
+- "65 123" :
+    - valid,
+    - different numbers,
+    - but contains a number that does not belong to any card;
+- "12 7" :
+    - valid,
+    - different numbers,
+    - not too big numbers,
+    - but contains a card that is already taken by a player
+    (a non-active card);
+- "11 17" :
+    - two active cards [CORRECT];
+
+
 Terms :
 - Card
 - Card Number
 - Card Value
+- Active Cards?
+- Taken Cards?
 - Player Input
+- Valid/Invalid Player Input
+
+
+Settings Items :
+- [Check Box] Show Intro Info
+- [Check Box] Go to next player on incorrect input,
+  "incorrect" indeed, not "invalid"
+- [None/Number] Default number of cards
 
 
 ===========
 Development
 ===========
 
+
+Components :
 - run_game function: takes Backend and Interface objects;
+- AbstractGameBackend class
+- AbstractGameInterface class
 
 
+Workflow 1 :
+1. We make a working version;
+2. On the basis of the working code, we analyze, and we make interfaces;
+3. Go to Item 1, but this time trying to implement the interfaces we've made;
 
 
