@@ -1,6 +1,14 @@
 import abc
 from dataclasses import dataclass
 
+@dataclass
+class MoveData :
+    player_names : list[ str ] = None
+    card_count : int = 0
+    # setup_data_error_message : str = ''
+
+    player_index : int = -1
+    player_input : str = ''
 
 class AbstractGameBackend( abc.ABC ) :
     @abc.abstractmethod
@@ -49,11 +57,4 @@ class AbstractGameInterface( abc.ABC ) :
         pass
 
 
-@dataclass
-class MoveData :
-    player_names : list[ str ] = None
-    card_count : int = 0
-    # setup_data_error_message : str = ''
 
-    player_index : int = -1
-    player_input : str = ''

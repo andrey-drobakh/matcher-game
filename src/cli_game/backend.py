@@ -1,8 +1,8 @@
-import src.core as core
+from src.core import AbstractGameBackend
 from src.core import MoveData
 
 
-class CLIGameBackend( core.AbstractGameBackend ) :
+class CLIGameBackend(AbstractGameBackend) :
     def __init__( self ) :
         super().__init__()
 
