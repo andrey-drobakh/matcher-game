@@ -1,7 +1,8 @@
-from src.core import \
-    AbstractGameBackend, \
-    AbstractGameInterface, \
-    MoveData
+from src.core import (
+    AbstractGameBackend,
+    AbstractGameInterface,
+    MoveData,
+)
 
 import time
 

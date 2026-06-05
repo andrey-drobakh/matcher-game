@@ -3,11 +3,12 @@ import string
 import random
 
 import src.core as core
-from src.core import \
-    MoveData, \
-    PlayerInputStatus, \
-    GameStatus, \
-    MoveStatus
+from src.core import (
+    MoveData,
+    PlayerInputStatus,
+    GameStatus,
+    MoveStatus,
+)
 import src.sample_game as sg
 
 

@@ -1,6 +1,9 @@
 from src import core
 import src.sample_game as sg
-from src.cli_game.interface import CLIGameInterface, CLIGame_SampleBackend
+from src.cli_game.interface import (
+    CLIGameInterface,
+    CLIGame_SampleBackend,
+)
 from src.cli_game.backend import CLIGameBackend
 
 

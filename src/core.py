@@ -2,6 +2,7 @@ import abc
 from dataclasses import dataclass, field
 from enum import Enum, auto
 
+
 class PlayerInputStatus( Enum ) :
     INVALID = auto()
     VALID_BUT_EQUAL_NUMBERS = auto()
@@ -21,6 +22,7 @@ class MoveStatus( Enum ) :
     CARDS_NOT_TAKEN = auto()
     NONE = auto()
 
+
 @dataclass
 class MoveData :
     player_names : list[ str ] = None
@@ -37,6 +39,7 @@ class MoveData :
     names_to_taken_cards : dict[ str, list ] = field( default_factory = dict )
     game_status = GameStatus.PLAY
     move_status = MoveStatus.NONE
+
 
 class AbstractGameBackend( abc.ABC ) :
     @abc.abstractmethod

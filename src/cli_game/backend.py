@@ -6,7 +6,7 @@ from src.core import (
     MoveData,
     PlayerInputStatus,
     GameStatus,
-    MoveStatus
+    MoveStatus,
 )
 
 
