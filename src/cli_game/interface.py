@@ -8,7 +8,7 @@ from src.core import (
     GameStatus,
     MoveStatus,
 )
-from src.cli_game.common import GameData
+from src.cli_game.common import GameData, create_all_cards
 
 
 class CLIGameInterface( core.AbstractGameInterface ) :
@@ -112,117 +112,16 @@ class Card :
     value : str
 
 
-class CLIGame_SampleBackend( core.AbstractGameBackend ) :
-    def __init__( self ) :
-        super().__init__()
-
-        self._all_cards : dict[ int, str ] = {}
-        self._names_to_taken_cards : dict[ str, list ] = {}
-
-    def is_game_over( self, gd : GameData ) -> bool :
-        return gd.game_status == GameStatus.STOPPED_BY_FORCE or \
-            len( gd.taken_cards ) == gd.card_count
-
-    def init_game( self, gd : GameData ) :
-        self._all_cards = self._create_all_cards( gd.card_count )
-        self._names_to_taken_cards = { name : [] for name in gd.player_names }
-        gd.names_to_taken_cards = self._names_to_taken_cards
-
-    def reset_move( self, gd : GameData ) :
-        gd.player_input_status = None
-
-        if gd.move_status == MoveStatus.CARDS_TAKEN :
-            return
-
-        self._shift_player_index( gd )
-
-    def handle_player_input( self, gd : GameData ) :
-        pi = gd.player_input
-
-        if pi == '.' :
-            gd.game_status = GameStatus.STOPPED_BY_FORCE
-            gd.player_input_status = PlayerInputStatus.SPECIAL_COMMAND
-
-            return
-
-        if not self._is_player_input_valid( gd ) :
-            gd.player_input_status = PlayerInputStatus.INVALID
-            gd.move_status = MoveStatus.CARDS_NOT_TAKEN
-
-            return
-
-        numbers = self._get_card_numbers( pi )
-        n1 = numbers[ 0 ]
-        n2 = numbers[ 1 ]
-
-        if n1 == n2 :
-            md.player_input_status = PlayerInputStatus.VALID_BUT_EQUAL_NUMBERS
-            md.move_status = MoveStatus.CARDS_NOT_TAKEN
-        elif not self._is_card_number_in_range( n1, gd ) or \
-            not self._is_card_number_in_range( n2, gd ) :
-            md.player_input_status = PlayerInputStatus.VALID_DIFFERENT_NUMBERS_BUT_TOO_BIG_NUMBER
-            md.move_status = MoveStatus.CARDS_NOT_TAKEN
-        elif self._is_card_number_taken( n1, gd ) or \
-            self._is_card_number_taken( n2, gd ) :
-            gd.player_input_status = PlayerInputStatus.VALID_DIFFERENT_NUMBERS_NOT_TOO_BIG_BUT_TAKEN_CARD_NUMBER
-            gd.move_status = MoveStatus.CARDS_NOT_TAKEN
-        else :
-            gd.player_input_status = PlayerInputStatus.CORRECT
-            gd.card_numbers = numbers
-            values = self._get_card_values( numbers )
-            gd.card_values = values
-
-            if values[ 0 ] == values[ 1 ] :
-                name = gd.player_name
-                v = values[ 0 ]
-                self._names_to_taken_cards[ name ].append(
-                    Card( numbers[ 0 ], v ) )
-                self._names_to_taken_cards[ name ].append(
-                    Card( numbers[ 1 ], v ) )
-
-                gd.taken_cards.append( numbers[ 0 ] )
-                gd.taken_cards.append( numbers[ 1 ] )
-
-                gd.move_status = MoveStatus.CARDS_TAKEN
-            else :
-                gd.move_status = MoveStatus.CARDS_NOT_TAKEN
-
-    def _get_card_values( self, card_numbers ) -> list[ str ] :
-        n1 = card_numbers[ 0 ]
-        n2 = card_numbers[ 1 ]
-
-        return [ self._all_cards[ n1 ], self._all_cards[ n2 ] ]
+class _PIHandlerHelper :
+    def __init__( self, game_data : GameData ) :
+        self._gd = game_data
 
     @staticmethod
-    def _create_all_cards( size : int ) :
-        """
-        :param size: an even integer.
-        """
-
-        k = size // 2
-        letters = list( string.ascii_lowercase[ : k ] ) * 2
-        random.shuffle( letters )
-
-        result = {}
-        for i, letter in enumerate( letters ) :
-            result[ i + 1 ] = letter
-
-        return result
-
-    def _is_card_number_taken( self, number, gd : GameData ) -> bool :
-        return number in gd.taken_cards
-
-    def _is_card_number_in_range( self, number, gd : GameData ) -> bool :
-        return number <= gd.card_count
-
-    def _get_card_numbers( self, valid_player_input : str ) -> list[ int ] :
-        return [ int( n ) for n in valid_player_input.split() ]
-
-    def _is_player_input_valid( self, gd : GameData ) -> bool :
+    def is_player_input_valid( raw_player_input : str ) -> bool :
         """
         Player Input is valid <=> it's two positive integer numbers.
         """
-        numbers = gd.player_input.split()
+        numbers = raw_player_input.split()
 
         if len( numbers ) == 2 :
             n1 = numbers[ 0 ]
@@ -237,21 +136,95 @@ class CLIGame_SampleBackend( core.AbstractGameBackend ) :
 
         return False
 
-    def _shift_player_index( self, gd : GameData ) :
-        if gd.player_index < len( gd.player_names ) - 1 :
-            gd.player_index += 1
+    @staticmethod
+    def get_card_numbers( valid_player_input : str ) -> list[ int ] :
+        return [ int( n ) for n in valid_player_input.split() ]
+
+    def is_card_number_too_big( self,  card_number ) -> bool :
+        return card_number <= self._gd.card_count
+
+    def is_card_number_taken( self,  card_number ) -> bool :
+        return card_number in self._gd.taken_cards
+
+    def get_card_values( self,  card_numbers : list ) -> list :
+        n1 = card_numbers[ 0 ]
+        n2 = card_numbers[ 1 ]
+
+        return [ self._gd.all_cards[ n1 ], self._gd.all_cards[ n2 ] ]
+
+
+class CLIGame_SampleBackend( core.AbstractGameBackend ) :
+    def __init__( self ) :
+        super().__init__()
+
+    def is_game_over( self, gd : GameData ) -> bool :
+        return gd.game_status == GameStatus.STOPPED_BY_FORCE or \
+            len( gd.taken_cards ) == gd.card_count
+
+    def init_game( self, gd : GameData ) :
+        gd.all_cards = create_all_cards( gd.card_count )
+        gd.names_to_taken_cards = { name : [] for name in gd.player_names }
+
+    def reset_move( self, gd : GameData ) :
+        gd.player_input_status = None
+
+        if gd.move_status == MoveStatus.CARDS_TAKEN :
+            return
+
+        gd.player_index = ( gd.player_index + 1 ) % len( gd.player_names )
+
+    def handle_player_input( self, gd : GameData ) :
+        helper = _PIHandlerHelper( gd )
+
+        pi = gd.player_input
+
+        if pi == '.' :
+            gd.game_status = GameStatus.STOPPED_BY_FORCE
+            gd.player_input_status = PlayerInputStatus.SPECIAL_COMMAND
+
+            return
+
+        if not helper.is_player_input_valid( pi ) :
+            gd.player_input_status = PlayerInputStatus.INVALID
+            gd.move_status = MoveStatus.CARDS_NOT_TAKEN
+
+            return
+
+        numbers = helper.get_card_numbers( pi )
+        n1 = numbers[ 0 ]
+        n2 = numbers[ 1 ]
+
+        if n1 == n2 :
+            gd.player_input_status = PlayerInputStatus.VALID_BUT_EQUAL_NUMBERS
+            gd.move_status = MoveStatus.CARDS_NOT_TAKEN
+        elif not helper.is_card_number_too_big( n1 ) or \
+                not helper.is_card_number_too_big( n2 ) :
+            gd.player_input_status = PlayerInputStatus.VALID_DIFFERENT_NUMBERS_BUT_TOO_BIG_NUMBER
+            gd.move_status = MoveStatus.CARDS_NOT_TAKEN
+        elif helper.is_card_number_taken( n1 ) or \
+                helper.is_card_number_taken( n1 ) :
+            gd.player_input_status = PlayerInputStatus.VALID_DIFFERENT_NUMBERS_NOT_TOO_BIG_BUT_TAKEN_CARD_NUMBER
+            gd.move_status = MoveStatus.CARDS_NOT_TAKEN
         else :
-            gd.player_index = 0
+            gd.player_input_status = PlayerInputStatus.CORRECT
+            gd.card_numbers = numbers
+            values = helper.get_card_values( numbers )
+            gd.card_values = values
 
+            if values[ 0 ] == values[ 1 ] :
+                name = gd.player_name
+                v = values[ 0 ]
+                gd.names_to_taken_cards[ name ].append(
+                    Card( numbers[ 0 ], v ) )
+                gd.names_to_taken_cards[ name ].append(
+                    Card( numbers[ 1 ], v ) )
 
+                gd.taken_cards.append( numbers[ 0 ] )
+                gd.taken_cards.append( numbers[ 1 ] )
 
-
-
-
-
-
-
-
+                gd.move_status = MoveStatus.CARDS_TAKEN
+            else :
+                gd.move_status = MoveStatus.CARDS_NOT_TAKEN
 
 
 
