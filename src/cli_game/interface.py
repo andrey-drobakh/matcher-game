@@ -85,6 +85,9 @@ class CLIGameInterface( core.AbstractGameInterface ) :
             name = gd.player_name
             print( f'\t{name} got the cards' )
 
+        if gd.move_status == MoveStatus.CARDS_NOT_TAKEN :
+            print()
+
     def display_game_results( self, gd : GameData ) :
         if gd.game_status == GameStatus.STOPPED_BY_FORCE :
             return
