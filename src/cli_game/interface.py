@@ -69,14 +69,15 @@ class CLIGameInterface( core.AbstractGameInterface ) :
 
         header = 'error : '
         error_message = header
-        if gd.player_input_status == PlayerInputStatus.INVALID :
-            error_message += 'type two numbers'
-        elif gd.player_input_status == PlayerInputStatus.VALID_BUT_EQUAL_NUMBERS :
-            error_message += 'equal numbers'
-        elif gd.player_input_status == PlayerInputStatus.VALID_DIFFERENT_NUMBERS_BUT_TOO_BIG_NUMBER :
-            error_message += 'too big number'
-        elif gd.player_input_status == PlayerInputStatus.VALID_DIFFERENT_NUMBERS_NOT_TOO_BIG_BUT_TAKEN_CARD_NUMBER :
-            error_message += 'taken card'
+        match gd.player_input_status :
+            case PlayerInputStatus.INVALID :
+                error_message += 'type two numbers'
+            case PlayerInputStatus.VALID_BUT_EQUAL_NUMBERS :
+                error_message += 'equal numbers'
+            case PlayerInputStatus.VALID_DIFFERENT_NUMBERS_BUT_TOO_BIG_NUMBER :
+                error_message += 'too big number'
+            case PlayerInputStatus.VALID_DIFFERENT_NUMBERS_NOT_TOO_BIG_BUT_TAKEN_CARD_NUMBER :
+                error_message += 'taken card'
 
         if gd.player_input_status != PlayerInputStatus.CORRECT :
             print( error_message )
@@ -205,7 +206,7 @@ class CLIGame_SampleBackend( core.AbstractGameBackend ) :
             gd.player_input_status = PlayerInputStatus.VALID_DIFFERENT_NUMBERS_BUT_TOO_BIG_NUMBER
             gd.move_status = MoveStatus.CARDS_NOT_TAKEN
         elif helper.is_card_number_taken( n1 ) or \
-                helper.is_card_number_taken( n1 ) :
+                helper.is_card_number_taken( n2 ) :
             gd.player_input_status = PlayerInputStatus.VALID_DIFFERENT_NUMBERS_NOT_TOO_BIG_BUT_TAKEN_CARD_NUMBER
             gd.move_status = MoveStatus.CARDS_NOT_TAKEN
         else :
