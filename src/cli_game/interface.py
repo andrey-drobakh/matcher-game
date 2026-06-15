@@ -28,10 +28,19 @@ class CLIGameInterface( core.AbstractGameInterface ) :
 
     def read_and_handle_setup_data( self, gd : GameData ) -> bool :
         names = input( 'player names : ' ).split()
-        n = int( input( 'number of cards : ' ) )
+        n = input( 'number of cards : ' )
 
         prefix = 'error:'
         error_message = ''
+
+        if not n.isnumeric() :
+            error_message = 'number of cards must be a number'
+            print( prefix, error_message )
+
+            return False
+
+        n = int( n )
+
         if not 2 <= len( names ) <= 4 :
             error_message = 'number of players must be 2, 3 or 4'
             print( prefix, error_message )
