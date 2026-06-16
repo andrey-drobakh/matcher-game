@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import string
 import random
+import time
 
 import src.core as core
 from src.core import (
@@ -68,7 +69,15 @@ class CLIGameInterface( core.AbstractGameInterface ) :
 
     def display_card_values( self, gd : GameData ) :
         if gd.player_input_status == PlayerInputStatus.CORRECT :
-            print( 'card values :', *gd.card_values )
+            prompt = 'card values :'
+            question_mark = '\u2754'
+
+            print( prompt, *gd.card_values, end = '', flush = True )
+            time.sleep( 2.0 )
+            print( '\r' + prompt + '\033[K' +
+                   ' ' + question_mark + ' ' + question_mark, flush = True )
+            time.sleep( 0.6 )
+
 
     def display_move_message( self, gd : GameData ) :
         if gd.game_status == GameStatus.STOPPED_BY_FORCE :
